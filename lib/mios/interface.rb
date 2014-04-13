@@ -4,8 +4,27 @@ module MiOS
 
     def initialize(base_uri)
       @base_uri = base_uri
-      @client = HTTPClient.new
-      refresh!
+      load_attributes
+      load_devices
+    end
+
+    def refresh!
+      @raw_data = nil
+      load_attributes
+      load_devices
+    end
+
+    def devices
+      @devices.values
+    end
+
+    def categories
+      binding.pry
+      devices.map { |device| device.category }.uniq.sort
+    end
+
+    def device_names
+      devices.map(&:name)
     end
 
     def method_missing(method, *args)
@@ -20,42 +39,38 @@ module MiOS
       "#<MiOS::Interface:0x#{'%x' % (self.object_id << 1)} @base_uri=#{@base_uri} @attributes=#{@attributes.inspect}>"
     end
 
-    def data_request
-      response = @client.get("#{base_uri}/data_request",{:id => "user_data", :output_format => :json})
-      return MultiJson.load(response.content) if response.ok?
-      nil
+  private
+    def raw_data
+      @raw_data ||= raw_data_request
     end
 
-    def refresh!
-      data = data_request
+    def raw_data_request
+      response = HTTPClient.new.get("#{base_uri}/data_request",{:id => "user_data", :output_format => :json})
+      return MultiJson.load(response.content) if response.ok?
+      raise 'Device not available'
+    end
+
+    def load_attributes
       @attributes = Hash[
-        data.select { |k, v|
-          !data[k].kind_of?(Hash) and !data[k].kind_of?(Array)
+        raw_data.select { |k, v|
+          !raw_data[k].kind_of?(Hash) and !raw_data[k].kind_of?(Array)
         }.map { |k, v|
           [k.downcase, v]
         }
       ]
+
       # Convert some time objects
       ['loadtime', 'devicesync'].each do |attr|
         @attributes[attr] = Time.at(@attributes[attr].to_i)
       end
+    end
+
+    def load_devices
       @devices = Hash[
-        data['devices'].map { |device|
-          [device['id'], Device.new(@client, @base_uri, device)]
+        raw_data['devices'].map { |device|
+          [device['id'], Device.new(HTTPClient.new, @base_uri, device)]
         }
       ]
-
-      true
     end
-
-    def categories
-      @devices.values.map { |device|
-        device.category
-      }.uniq.sort
-    end
-
-    def devices; @devices.values; end
-
-    def device_names; devices.map(&:name); end
   end
 end
