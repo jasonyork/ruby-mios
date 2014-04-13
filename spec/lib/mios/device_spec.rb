@@ -24,7 +24,7 @@ describe MiOS::Device do
     end
 
     it "should output a warning for unsupported services" do
-      expect(@output).to eql "WARNING: Tar not yet supported\n"
+      expect(@output).to eql "WARNING: Bar not yet supported\nWARNING: Tar not yet supported\n"
     end
   end
 
