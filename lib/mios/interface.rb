@@ -3,8 +3,7 @@ module MiOS
     attr_reader :attributes, :base_uri
 
     def initialize(base_uri)
-      @base_uri = base_uri
-      @client = HTTPClient.new
+      @client = MiOS::Client.new(base_uri)
       refresh!
     end
 
@@ -21,9 +20,7 @@ module MiOS
     end
 
     def data_request
-      response = @client.get("#{base_uri}/data_request",{:id => "user_data", :output_format => :json})
-      return MultiJson.load(response.content) if response.ok?
-      nil
+      @client.json_data_request({:id => "user_data", :output_format => :json})
     end
 
     def refresh!
@@ -41,7 +38,7 @@ module MiOS
       end
       @devices = Hash[
         data['devices'].map { |device|
-          [device['id'], Device.new(@client, @base_uri, device)]
+          [device['id'], Device.new(@client, device)]
         }
       ]
 

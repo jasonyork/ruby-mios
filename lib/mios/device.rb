@@ -1,9 +1,9 @@
 module MiOS
   class Device
-    attr_reader :attributes, :client, :base_uri, :states
+    attr_reader :attributes, :client, :states
 
-    def initialize(client, base_uri, data)
-      @client, @base_uri = client, base_uri
+    def initialize(client, data)
+      @client = client
       parse(data)
     end
 
@@ -20,10 +20,8 @@ module MiOS
     end
 
     def reload
-      client_get = @client.get("#{@base_uri}/data_request", {:id => 'status', :DeviceNum => attributes['id'], :output_format => :json})
-      load_result = MultiJson.load(client_get.content)
+      load_result = @client.json_data_request({:id => 'status', :DeviceNum => attributes['id'], :output_format => :json})
       parse(load_result["Device_Num_#{attributes['id']}"], true)
-
       self
     end
 
