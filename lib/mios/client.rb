@@ -6,7 +6,9 @@ module MiOS
       @client = HTTPClient.new
     end
 
-    def json_data_request(params)
+    def data_request(params)
+      # default_params = {}
+      # params = default_params.merge(params)
       MultiJson.load(@client.get("#{@base_uri}/data_request", params).content)
     end
 

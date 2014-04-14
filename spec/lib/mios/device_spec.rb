@@ -4,7 +4,8 @@ describe MiOS::Device do
   before :each do
     states = [ { 'service' => "foo:Bar" }, { 'service' => "foo:Tar" } ]
     data = { 'id' => '1', 'states' => states }
-    client = double(json_data_request: "{\"Device_Num_1\": #{MultiJson.dump(data)}}")
+    client = double()
+    client.stub(:data_request) { {"Device_Num_1" => data } }
     @output = capture_stderr do
       @device = MiOS::Device.new(client, data)
     end

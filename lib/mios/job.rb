@@ -73,7 +73,7 @@ module MiOS
     end
 
     def reload_status!
-      @status = @obj.client.json_data_request({:id => 'jobstatus', :job => @id, :plugin => 'zwave', :output_format => :json})['status']
+      @status = @obj.client.data_request({:id => 'jobstatus', :job => @id, :plugin => 'zwave', :output_format => :json})['status']
     end
   end
 end

@@ -20,7 +20,7 @@ module MiOS
     end
 
     def reload
-      load_result = @client.json_data_request({:id => 'status', :DeviceNum => attributes['id'], :output_format => :json})
+      load_result = @client.data_request({:id => 'status', :DeviceNum => attributes['id'], :output_format => :json})
       parse(load_result["Device_Num_#{attributes['id']}"], true)
       self
     end
