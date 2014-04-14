@@ -7,8 +7,8 @@ module MiOS
     end
 
     def data_request(params)
-      # default_params = {}
-      # params = default_params.merge(params)
+      default_params = { :output_format => :json}
+      params = default_params.merge(params)
       MultiJson.load(@client.get("#{@base_uri}/data_request", params).content)
     end
 

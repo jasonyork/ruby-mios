@@ -19,8 +19,12 @@ module MiOS
       "#<MiOS::Interface:0x#{'%x' % (self.object_id << 1)} @base_uri=#{@base_uri} @attributes=#{@attributes.inspect}>"
     end
 
+    def data_request(params)
+      @client.data_request(params)
+    end
+
     def refresh!
-      data = @client.data_request({:id => "user_data", :output_format => :json})
+      data = data_request({:id => "user_data"})
       @attributes = Hash[
         data.select { |k, v|
           !data[k].kind_of?(Hash) and !data[k].kind_of?(Array)
@@ -34,7 +38,7 @@ module MiOS
       end
       @devices = Hash[
         data['devices'].map { |device|
-          [device['id'], Device.new(@client, device)]
+          [device['id'], Device.new(self, device)]
         }
       ]
       true

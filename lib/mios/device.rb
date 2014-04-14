@@ -1,9 +1,9 @@
 module MiOS
   class Device
-    attr_reader :attributes, :client, :states
+    attr_reader :attributes, :interface, :states
 
-    def initialize(client, data)
-      @client = client
+    def initialize(interface, data)
+      @interface = interface
       parse(data)
     end
 
@@ -20,7 +20,7 @@ module MiOS
     end
 
     def reload
-      load_result = @client.data_request({:id => 'status', :DeviceNum => attributes['id'], :output_format => :json})
+      load_result = @interface.data_request({:id => 'status', :DeviceNum => attributes['id']})
       parse(load_result["Device_Num_#{attributes['id']}"], true)
       self
     end
