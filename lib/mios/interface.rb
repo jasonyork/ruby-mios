@@ -1,10 +1,9 @@
 module MiOS
   class Interface
-    attr_reader :attributes, :base_uri
+    attr_reader :attributes
 
     def initialize(base_uri)
-      @client = MiOS::Client.new(base_uri)
-      @base_uri = base_uri
+      @client = Client.new(base_uri)
       load_attributes
       load_devices
     end
@@ -20,7 +19,6 @@ module MiOS
     end
 
     def categories
-      binding.pry
       devices.map { |device| device.category }.uniq.sort
     end
 
@@ -29,27 +27,22 @@ module MiOS
     end
 
     def method_missing(method, *args)
-      if @attributes.has_key?(method.to_s)
-        @attributes[method.to_s]
-      else
-        super
-      end
+      return @attributes[method.to_s] if @attributes.has_key?(method.to_s)
+      super
     end
 
     def inspect
-      "#<MiOS::Interface:0x#{'%x' % (self.object_id << 1)} @base_uri=#{@base_uri} @attributes=#{@attributes.inspect}>"
+      "#<MiOS::Interface:0x#{'%x' % (self.object_id << 1)} uri=#{@client.base_uri} @attributes=#{@attributes.inspect}>"
     end
 
-
   private
+
     def raw_data
       @raw_data ||= raw_data_request
     end
 
     def raw_data_request
-      response = @client.data_request(id: "user_data")
-      # return MultiJson.load(response.content) if response.ok?
-      # raise 'Device not available'
+      @client.data_request(id: "user_data")
     end
 
     def load_attributes

@@ -95,18 +95,4 @@ describe "interface" do
     end
   end
 
-  it "should turn on the light" do
-    pending "this test should live somewhere else... I think."
-    VCR.use_cassette('turn_on_light') do
-      mios.devices[11].on! { expect(mios.devices[11]).to be_on }
-    end
-  end
-
-  it "should turn off the light" do
-    pending "this test should live somewhere else... I think."
-    VCR.use_cassette('turn_off_light') do
-      mios.devices[11].off! { expect(mios.devices[11]).to be_off }
-    end
-  end
-
 end
