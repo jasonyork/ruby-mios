@@ -1,16 +1,18 @@
 module MiOS
   class Interface
-    attr_reader :attributes
+    attr_reader :attributes, :categories
 
     def initialize(base_uri)
       @client = Client.new(base_uri)
       load_attributes
+      load_categories
       load_devices
     end
 
     def refresh!
       @raw_data = nil
       load_attributes
+      load_categories
       load_devices
     end
 
@@ -18,9 +20,10 @@ module MiOS
       @devices.values
     end
 
-    def categories
-      devices.map { |device| device.category }.uniq.sort
-    end
+    # def categories
+    #   binding.pry
+    #   devices.map { |device| device.category }.uniq.sort
+    # end
 
     def device_names
       devices.map(&:name)
@@ -58,6 +61,17 @@ module MiOS
       ['loadtime', 'devicesync'].each do |attr|
         @attributes[attr] = Time.at(@attributes[attr].to_i)
       end
+    end
+
+    def load_categories
+      @categories = raw_data['category_filter']
+        .select { |i| !i["categories"].empty? }
+        .map do |filter|
+          filter["categories"].map do |category|
+            { category.to_i => filter["Label"]["text"] }
+          end
+        end
+        .flatten
     end
 
     def load_devices
