@@ -60,12 +60,12 @@ module MiOS
 
     # Create boolean methods for each status
     STATUS.each do |status_id, method_name|
-      define_method("#{method_name.downcase.gsub(' ','_')}?") do
+      define_method("#{method_name.downcase.gsub(' ', '_')}?") do
         status == status_id
       end
     end
 
-    def exists?;  not nonexistent?; end
+    def exists?;  !nonexistent?; end
 
     def status
       @status || reload_status!
