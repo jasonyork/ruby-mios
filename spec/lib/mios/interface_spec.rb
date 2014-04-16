@@ -58,17 +58,17 @@ describe "interface" do
   describe :categories do
     it 'should return an array of categories' do
       VCR.use_cassette('data_request') do
-        expect(mios.categories).to eql [{15=>"Audio/Video"},
-                                        {2=>"Lights"},
-                                        {3=>"Lights"},
-                                        {6=>"Cameras"},
-                                        {7=>"Door locks"},
-                                        {4=>"Sensors"},
-                                        {12=>"Sensors"},
-                                        {16=>"Sensors"},
-                                        {17=>"Sensors"},
-                                        {18=>"Sensors"},
-                                        {5=>"Thermostats"}]
+        expect(mios.categories).to eql [{ 15 => 'Audio/Video' },
+                                        { 2 => 'Lights' },
+                                        { 3 => 'Lights' },
+                                        { 6 => 'Cameras' },
+                                        { 7 => 'Door locks' },
+                                        { 4 => 'Sensors' },
+                                        { 12 => 'Sensors' },
+                                        { 16 => 'Sensors' },
+                                        { 17 => 'Sensors' },
+                                        { 18 => 'Sensors' },
+                                        { 5 => 'Thermostats' }]
       end
     end
   end

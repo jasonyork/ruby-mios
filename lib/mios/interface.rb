@@ -65,10 +65,10 @@ module MiOS
 
     def load_categories
       @categories = raw_data['category_filter']
-        .select { |i| !i["categories"].empty? }
+        .select { |i| !i['categories'].empty? }
         .map do |filter|
-          filter["categories"].map do |category|
-            { category.to_i => filter["Label"]["text"] }
+          filter['categories'].map do |category|
+            { category.to_i => filter['Label']['text'] }
           end
         end
         .flatten
