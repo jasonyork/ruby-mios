@@ -10,7 +10,7 @@ module MiOS
   end
 
   class Job
-    Status = {
+    STATUS = {
       -1 => "Nonexistent",
       0 => "Waiting",
       1 => "In progress",
@@ -58,15 +58,14 @@ module MiOS
       raise Error::JobTimeout
     end
 
-    def exists?; status != -1; end
-    def waiting?; status == 0; end
-    def in_progress?; status == 1; end
-    def error?; status == 2; end
-    def aborted?; status == 3; end
-    def completed?; status == 4; end
-    def waiting_for_callback?; status == 5; end
-    def requeue?; status == 6; end
-    def in_progress_with_pending_data?; status == 7; end
+    # Create boolean methods for each status
+    STATUS.each do |status_id, method_name|
+      define_method("#{method_name.downcase.gsub(' ', '_')}?") do
+        status == status_id
+      end
+    end
+
+    def exists?;  !nonexistent?; end
 
     def status
       @status || reload_status!
