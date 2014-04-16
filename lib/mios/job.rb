@@ -39,7 +39,7 @@ module MiOS
     end
 
     def when_complete(&block)
-      raise Error::JobTimeout if !exists?
+      raise Error::JobTimeout if nonexistent?
       Timeout::timeout(20) do
         sleep_interval = 0.25
 
@@ -48,9 +48,9 @@ module MiOS
           sleep(sleep_interval += 0.25)
           reload_status!
         end
-        raise JobError if error?
-        raise JobAborted if aborted?
-        raise JobRequeue if requeue?
+        raise Error::JobError if error?
+        raise Error::JobAborted if aborted?
+        raise Error::JobRequeue if requeue?
       end
       yield @obj.reload
     rescue Timeout::Error
@@ -58,14 +58,12 @@ module MiOS
       raise Error::JobTimeout
     end
 
-    # Create boolean methods for each status
+    # Create predicate methods for each status
     STATUS.each do |status_id, method_name|
       define_method("#{method_name.downcase.gsub(' ', '_')}?") do
         status == status_id
       end
     end
-
-    def exists?;  !nonexistent?; end
 
     def status
       @status || reload_status!
