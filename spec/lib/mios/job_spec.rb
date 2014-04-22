@@ -11,12 +11,12 @@ describe MiOS::Job do
     job.stub(:status).and_return(val)
   end
 
-  describe "status predicate methods" do
+  describe 'status predicate methods' do
 
-    it "have been defined" do
+    it 'have been defined' do
       job.class::STATUS.each do |status_num, status_name|
         n = status_name.downcase.gsub(' ', '_') + '?'
-        job.methods.should include(n.to_sym), "#{n} method not defined on #{job.class}"
+        job.methods.should include(n.to_sym), "#{n} not defined #{ job.class }"
       end
     end
   end
@@ -29,7 +29,7 @@ describe MiOS::Job do
     [3, MiOS::Error::JobAborted],
     [6, MiOS::Error::JobRequeue]
     ].each do |status_num, err|
-      it "raises a #{err.to_s.split('::').last} when status #{status_num}" do
+      it "raises a #{ err.to_s.split('::').last} when status #{ status_num }" do
         stub_job_status(status_num)
         expect{job.when_complete}.to raise_error(err)
       end
@@ -55,4 +55,3 @@ describe MiOS::Job do
     end
   end
 end
-
