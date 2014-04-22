@@ -10,7 +10,7 @@ module MiOS
   end
 
   class Job
-    Status = {
+    STATUS = {
       -1 => "Nonexistent",
       0 => "Waiting",
       1 => "In progress",
@@ -39,7 +39,7 @@ module MiOS
     end
 
     def when_complete(&block)
-      raise Error::JobTimeout if !exists?
+      raise Error::JobTimeout if nonexistent?
       Timeout::timeout(20) do
         sleep_interval = 0.25
 
@@ -48,9 +48,9 @@ module MiOS
           sleep(sleep_interval += 0.25)
           reload_status!
         end
-        raise JobError if error?
-        raise JobAborted if aborted?
-        raise JobRequeue if requeue?
+        raise Error::JobError if error?
+        raise Error::JobAborted if aborted?
+        raise Error::JobRequeue if requeue?
       end
       yield @obj.reload
     rescue Timeout::Error
@@ -58,15 +58,12 @@ module MiOS
       raise Error::JobTimeout
     end
 
-    def exists?; status != -1; end
-    def waiting?; status == 0; end
-    def in_progress?; status == 1; end
-    def error?; status == 2; end
-    def aborted?; status == 3; end
-    def completed?; status == 4; end
-    def waiting_for_callback?; status == 5; end
-    def requeue?; status == 6; end
-    def in_progress_with_pending_data?; status == 7; end
+    # Create predicate methods for each status
+    STATUS.each do |status_id, method_name|
+      define_method("#{method_name.downcase.gsub(' ', '_')}?") do
+        status == status_id
+      end
+    end
 
     def status
       @status || reload_status!
