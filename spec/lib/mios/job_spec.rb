@@ -28,9 +28,9 @@ describe MiOS::Job do
     [3, MiOS::Error::JobAborted],
     [6, MiOS::Error::JobRequeue]
     ].each do |status_num, err|
-      it "raises a #{ err.to_s.split('::').last} when status #{ status_num }" do
+      it "raises a #{err.to_s.split('::').last} when status #{ status_num }" do
         stub_job_status(status_num)
-        expect{job.when_complete}.to raise_error(err)
+        expect { job.when_complete }.to raise_error(err)
       end
     end
   end
