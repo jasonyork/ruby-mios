@@ -21,7 +21,6 @@ describe MiOS::Job do
     end
   end
 
-
   describe :when_complete do
 
     [[-1, MiOS::Error::JobTimeout],
