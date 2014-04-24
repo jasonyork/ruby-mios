@@ -1,29 +1,26 @@
 module MiOS
   class Interface
     extend Forwardable
-
-    attr_reader :attributes
+    attr_reader :attributes, :categories
 
     def_delegator :@client, :device_status
 
     def initialize(base_uri)
       @client = Client.new(base_uri)
       load_attributes
+      load_categories
       load_devices
     end
 
     def refresh!
       @raw_data = nil
       load_attributes
+      load_categories
       load_devices
     end
 
     def devices
       @devices.values
-    end
-
-    def categories
-      devices.map { |device| device.category }.uniq.sort
     end
 
     def device_names
@@ -70,6 +67,19 @@ module MiOS
           [device['id'], Device.new(self, device)]
         }
       ]
+    end
+
+    def load_categories
+      @categories = raw_data['category_filter']
+        .select { |i| !i["categories"].empty? } # non-empty categories
+        .map { |filter| extract_categories_from filter }
+        .flatten
+    end
+
+    def extract_categories_from filter
+      filter["categories"].map do |category|
+        { category.to_i => filter["Label"]["text"] }
+      end
     end
   end
 end
